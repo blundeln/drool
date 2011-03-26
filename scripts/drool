@@ -1,0 +1,975 @@
+#!/usr/bin/python
+# Copyright (C) 2006 Nick Blundell.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+# The GNU GPL is contained in /usr/doc/copyright/GPL on a Debian
+# system and in the file COPYING in the Linux kernel source.
+# 
+# drupal-site-install (drupal-site-install.py)
+# --------------------------------------------
+#
+# Description:
+#
+#
+# Author       : Nick Blundell
+# Organisation : www.nickblundell.org.uk
+# Version Info : $Id$
+#
+
+import sys, os
+import ConfigParser
+import optparse
+import datetime
+
+# Add this to start of sys.path - python PYTHONPATH seem's to put this in the middle so installed module overide local ones.
+if "DEV_PATH" in os.environ :
+  sys.path[0:0] = [os.environ["DEV_PATH"]]
+
+import drool
+import drool.system
+import drool.util
+import drool.drupal
+import drool.core
+import drool.theme
+import drool.dns
+import drool.apache
+
+from nbdebug import *
+
+skinRegions = drool.theme.SKIN_REGIONS 
+skinString = ""; 
+for skinRegion in skinRegions : skinString += "%s|" % skinRegion
+
+
+def NEW() :
+  """
+  Creates a new site.
+  Syntax: new <sitename>
+  Example: new www.mysite.org.uk
+  """
+  
+  try : siteName = commandArgs[0]
+  except : drool.system.abort("You must enter the name of a site.")
+  
+  drool.system.displayHeader("Creating new Drupal site '%s'." % (siteName))
+  drool.core.createNewSite(siteName)
+
+  # Check the site has been created.
+  newSite = drool.drupal.getSite(siteName)
+  if newSite :
+    drool.system.displayHeader("Drupal site '%s' has been created in %s." % (newSite, newSite.drupalDir))
+    if int(newSite.getDrupalVersion()[0]) >= 5 :
+      drool.system.displayHeader("To install your new site, you must visit this link: http://%s/install.php" % siteName)
+  else :
+    raise Exception("The site was not created.")
+
+
+def DELETE() :
+  """
+  Deletes a site.
+  SYNTAX: delete <sitename>
+  EXAMPLE: delete www.mysite.com
+  """
+  try: siteName = commandArgs[0]
+  except : drool.system.abort("You must enter the name of a site.")
+ 
+  site = drool.drupal.getSite(siteName)
+
+  if not drool.system.yesQuestion("Are you sure you want to delete the site '%s' and all of its data?" % site):
+    return
+
+  # Try to get the site.
+  drool.core.deleteSite(siteName)
+  drool.system.displayHeader("Drupal site '%s' has been deleted." % (siteName))
+  
+def CLONE() :
+  """
+  Clones one site from another (i.e. all data and Drupal configuration)
+  SYNTAX: <destsite> <sourcesite>
+  EXAMPLE: clone www.mynewsite.com www.siteiwanttoclone.co.uk
+
+  Note that, if you are currently within a drupal installation folder,
+  drool will try to clone to that folder instead of the same as
+  the source site.
+
+  Drupal often has references to a site's domain name stored in
+  the database within serialised php strings, but this cloning process
+  replaces all such references, so that you can create a functionaly exact
+  copy of the source site.
+  """
+  try : destSiteName = commandArgs[0]
+  except : drool.system.abort("You must enter the name of the new site.")
+  try : sourceSiteName = commandArgs[1]
+  except : drool.system.abort("You must enter the name of an existing site to clone.")
+  
+  sourceSite = drool.drupal.getSite(sourceSiteName) 
+  
+  drool.core.cloneSite(sourceSite, destSiteName)
+  drool.system.displayHeader("Drupal site '%s' has been created as a clone of '%s'." % (destSiteName, sourceSite))
+
+
+def ENABLE() :
+  """
+  Enables the site on the webserver.
+  SYNTAX: enable <mysitename>
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  if not site : drool.system.abort("That site does not exist.")
+
+  if drool.settings.manageApache :
+    drool.apache.setSiteEnabled(site, True)
+    drool.system.displayHeader("Site '%s' has been enabled." % site)
+
+
+def DISABLE() :
+  """
+  Temporarily disables the site on the webserver.
+  SYNTAX: disable <mysitename>
+  """
+  
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  if not site : drool.system.abort("That site does not exist.")
+
+  if drool.settings.manageApache :
+    drool.apache.setSiteEnabled(site, False)
+    drool.system.displayHeader("Site '%s' has been disabled." % site)
+
+
+def MODULE() :
+  """
+  Downloads and in some cases installs an appropriately versioned 
+  drupal module to a site.
+  
+  SYNTAX: module <sitename> <modulename>
+  EXAMPLE: module www.mysite.com ecommerce
+
+  Note that the module name entered must exactly match the
+  module's name (e.g. same case, etc.).  If you are not sure
+  of the module's name, run this command without specifying a
+  module and you will see an up-to-date list of all modules.
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  try : moduleName = commandArgs[1]
+  except : moduleName = None
+
+  if not moduleName :
+    moduleList = drool.drupal.getModuleList()
+    moduleNames = []
+    for module in moduleList :
+      name = module.split("-")[0]
+      if name not in moduleNames :
+        moduleNames.append(name)
+    drool.system.displayBox("\n".join(moduleNames), title="Available modules")
+  else :
+    drool.system.displayHeader("Installing module '%s' to site '%s'." % (moduleName, site))
+    drool.core.installModule(moduleName, site)
+    drool.system.displayHeader("Module '%s' has been installed to '%s'." % (moduleName, site))
+ 
+
+  
+def THEME() :
+  """
+  Downloads and in some cases installs an appropriately versioned drupal theme to a site.
+  SYNTAX: theme <sitename> <themename>
+  EXAMPLE: theme www.mysite.com box_grey
+
+  Note that the theme name entered must exactly match the theme's name (e.g. same case, etc.)
+  """
+  
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  try : themeName = commandArgs[1]
+  except : drool.system.abort("You must enter the name of a theme.")
+  
+  drool.system.displayHeader("Installing local theme '%s'" % themeName)
+  
+  drool.core.installTheme(themeName, site)
+  drool.system.displayHeader("Installed theme '%s'." % themeName)
+
+# TODO: This should not be here.
+def writeCSV(fileName, data) :
+  
+  import csv
+  import StringIO
+  
+  csvOutput = StringIO.StringIO()
+  writer = csv.writer(csvOutput)
+
+  # Get heading list.
+  displayHeadings = ["Domain"]
+  for heading in data[data.keys()[0]] :
+    displayHeadings.append(heading.capitalize())
+
+  writer.writerow(displayHeadings)
+  writer.writerow(["" for i in range(0, len(displayHeadings))])
+
+  for siteName in data :
+    dataRow = [siteName]
+    siteData = data[siteName]
+    for heading in siteData.keys() :
+      dataRow.append(siteData[heading])
+    writer.writerow(dataRow)
+
+  open(fileName, "w").write(csvOutput.getvalue())
+
+
+def REPORT() :
+  """
+  Allows reports to be made of drool hosted websites.
+  """
+
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : site = None 
+  debugOutput("Reporting")
+
+  report = drool.core.generateReport(site)
+
+  # Now write the report to a csv.
+  # TODO: add hostname.
+  reportFile = "/tmp/drool-report--%s.csv" % (datetime.datetime.now().strftime("%Y-%m-%d"))
+  writeCSV(reportFile, report)
+
+  # Now send an email
+  adminEmails = drool.settings.adminEmails.split(",")
+  for adminEmail in adminEmails :
+    print "Sending '%s' to %s" % (reportFile, adminEmail)
+    drool.system.emailFile("drool",adminEmail.strip(),"Drool report (%s)" % os.path.basename(reportFile) ,reportFile)
+
+  debugOutput(report)
+
+
+# XXX: This should go in the core.
+def LIST() :
+  """
+  Produces a list of all drupal sites.
+  """
+  drool.system.displayHeader("Site listing for Drupal root: %s" % drool.settings.drupalRoot)
+
+  siteList = drool.drupal.getSiteList()
+  sites = siteList[drool.drupal.ALL_SITES]
+ 
+  # TODO: Organise the list.
+  #organisedSites = drool.drupal.organiseSiteList(sites)
+  
+  # Print the headings.
+  headings = ["SITE".ljust(40), "SIZE".ljust(16), "TRANSFER".ljust(16), "STATUS".ljust(9)]
+  for heading in headings :
+    print heading,
+  print
+
+  for drupalInstallation in siteList :
+    
+    if drupalInstallation == drool.drupal.ALL_SITES :
+      continue
+   
+    areaTitle = "AREA: %s" % drupalInstallation.replace(drool.settings.drupalRoot+"/","")
+    sitesString = ""
+   
+    for site in siteList[drupalInstallation] :
+      siteDir = site.getSitePath()
+      siteDirSize = drool.settings.options.showDiskUsage and drool.drupal.getSiteDiskUsage(site) or 0
+      status = drool.core.getStatus(site)
+      
+      if drool.settings.manageApache :
+        transfer = drool.apache.getSiteTraffic(site)
+        transferQuota = drool.apache.getTransferQuota(site)
+        enabled = drool.apache.getSiteEnabled(site) and "Enabled" or "Disabled"
+      else :
+        transfer, transferQuota, enabled = 0, 0, "N/A"
+      
+      try :
+        description = status["description"].systemValue
+      except :
+        description = ""
+        
+      description = description or ""
+      
+      if site.name.lower().startswith("t-") :
+        description = "TMPLT: %s" % description 
+      
+      data = [
+        site.name,
+        status and drool.util.proportionString(siteDirSize, status["storageQuota"].systemValue) or "",
+        drool.util.proportionString(transfer, transferQuota),
+        enabled,
+        description,
+      ]
+      debugOutput("data %s" % data)
+      for i in range(0, len(headings)) :
+        sitesString += data[i].ljust(len(headings[i]))
+      sitesString += "\n"
+
+      #drool.core.updateControlBar(site)
+    drool.system.displayBox(sitesString, title=areaTitle)
+
+
+def EVENT() :
+  """
+  This is run only for maintenance.
+  SYNTAX: event <term>
+  EXAMPLE: event hourly
+  """
+  try : interval = commandArgs[0].lower()
+  except : drool.system.abort("You must enter the event interval")
+
+  if interval == "hourly" :
+    pass
+  elif interval == "daily" :
+    for site in drool.drupal.getSiteList()[drool.drupal.ALL_SITES] :
+      drool.core.updateControlBar(site)
+
+      # Dump the database.
+      dumpFilePath = os.path.join(site.getSitePath(),"dbdump.gz")
+      drool.database.dumpDatabase(site, dumpFilePath)
+      # Make sure the dump file cannot be read by the browser.
+      drool.system.changePermissions("600", dumpFilePath)
+
+
+def STATUS() :
+  """
+  Edit the status of a site - exprimental.
+  I will probably scrap this function.
+  SYNTAX: status <sitename>
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+
+  debugOutput("Setting status for site '%s'" % (site))
+
+  drool.core.editStatus(site)
+  
+ 
+def SKIN():
+  """
+  Applies a skin to the theme of a site.
+  SYNTAX: skin <sitename> <theme> (to list available skin regions of a site)
+  SYNTAX: skin <sitename> <theme> <skin region> [skin image file]
+  EXAMPLES:
+    skin www.mysite.org.uk drool3 (to list skin regions of this site)
+    skin www.mysite.org.uk drool3 block myblockskin.png
+    skin www.mysite.org.uk drool3 page pageimage.png
+    skin www.mysite.org.uk drool3 page (to apply a transparent skin)
+
+  ADVANCED EXAMPLED:
+    skin www.mysite.org.uk drool3 blocktitle titleimage.png --skinSelector '.active'
+    skin www.mysite.org.uk drool3 blocktitle titleimage.png --skinPseudoClass ':hover'
+
+  Note that this can only be used on skin-enabled themes such as drool3 and for now supports only png files.
+  Also, for the trick to work, the skin images must have NO transparency (cf. sliding windows).
+  """
+  
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+
+  try : themeName = commandArgs[1]
+  except : drool.system.abort("You must enter the name of a theme of '%s'." % site)
+
+  try : skinRegion = commandArgs[2]
+  except : skinRegion = None
+
+  try : skinImage = commandArgs[3]
+  except : skinImage = None
+
+  if drool.settings.options.useTestSkin :
+    from pkg_resources import resource_filename
+    skinImage = resource_filename(drool.__name__, os.path.join("resources","testskin.png"))
+    drool.system.runCommand("cp '%s' '%s'" % (skinImage, "/tmp"))
+    skinImage = "/tmp/testskin.png"
+    debugOutput("Using test skin %s" % skinImage)
+
+  skinSelector = drool.settings.options.skinSelector
+  skinPseudoClass = drool.settings.options.skinPseudoClass
+  xChop = drool.settings.options.xChop
+  yChop = drool.settings.options.yChop
+
+  results = drool.core.skinSite(site, themeName, skinRegion, skinImage, skinSelector, skinPseudoClass, xChop, yChop, chopThreshold=drool.settings.options.chopThreshold)
+
+  if not skinRegion and results :
+    drool.system.message("""Available skin regions for theme '%s' of site '%s':""" % (themeName, site))
+    for result in results :
+      drool.system.message(result)
+  else :
+    drool.system.displayHeader("Successfully skinned region '%s' with skin '%s'." % (skinRegion, skinImage))
+  
+
+def UNSKIN():
+  """
+  Removes a skin from the theme of a site.
+  SYNTAX: unskin <sitename> <theme> <skin region>
+  EXAMPLES: 
+    unskin www.mysite.org.uk drool3 block myblockskin.png
+    unskin www.mysite.org.uk drool3 all (to remove all skins)
+
+  Note that this can only be used with a skinnable theme.
+  """
+
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+
+  try : themeName = commandArgs[1]
+  except : drool.system.abort("You must enter the name of a theme of '%s'." % site)
+  
+  try : skinRegion = commandArgs[2]
+  except : drool.system.abort("You must enter the region to skin.")
+
+  skinSelector = drool.settings.options.skinSelector
+  skinPseudoClass = drool.settings.options.skinPseudoClass
+  
+  drool.core.unskinSite(site, themeName, skinRegion, skinSelector, skinPseudoClass)
+  
+  drool.system.displayHeader("Successfully unskinned region '%s'." % (skinRegion))
+
+
+def MOVE() :
+  """
+  Moves the site's files to another drupal installation folder.
+  SYNTAX: move <sitename> <dest path>
+  EXAMPLE: move www.mysite.org /home/websites/drupal-5.7
+  """
+  
+  try : site = drool.drupal.getSite(commandArgs[0])
+  except : drool.system.abort("You must enter the name of a site.")
+
+  try : destDrupalPath = commandArgs[1]
+  except : drool.system.abort("You must enter the name of a Drupal installation to move this site to.")
+
+  drool.core.move(site, destDrupalPath)
+
+  drool.system.message("Successfully moved site '%s' to %s." % (site, destDrupalPath))
+
+
+def DUMPDB() :
+  """
+  Dumps the database of a site to a file
+  SYNTAX: dumpdb <sitename> <dumpfile>
+  EXAMPLE: dumpdb www.mysite.org dump
+  """
+
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+
+  try : dumpFilePath = commandArgs[1]
+  except : drool.system.abort("You must enter the name of a file to dump the database to.")
+ 
+  debugOutput("Dumping to %s" % dumpFilePath)
+  drool.system.displayHeader("Dumping database for site '%s' to %s." % (site, dumpFilePath))
+  drool.database.dumpDatabase(site, dumpFilePath)
+  drool.system.displayHeader("Successfully dumped database for site '%s' to %s." % (site, dumpFilePath))
+
+
+def LOADDB() :
+  """
+  Loads data from a dump file into a site's database
+  SYNTAX: loaddb <sitename> <dumpfile>
+  EXAMPLE: loaddb www.mysite.org dump
+
+  Note that all data in the site's database will overwritten by that in the dump file.
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+ 
+  try : dumpFilePath = commandArgs[1]
+  except : drool.system.abort("You must enter the name of a dump file to load the database from.")
+ 
+  if not drool.settings.options.force :
+    print "Are you sure you want to replace the database of site '%s'?" % site
+
+    input = raw_input("Type 'yes' to contiue: ")
+    if input.lower() != "yes" : return
+
+  originalDomainName, originalSiteName = drool.database.getOriginalSiteDetails(dumpFilePath)
+
+  debugOutput("Loading %s into %s" % (dumpFilePath, site))
+  drool.system.displayHeader("Loading database for site '%s' from %s." % (site, dumpFilePath))
+  drool.database.loadDatabase(site, dumpFilePath)
+  drool.drupal.replaceSiteReferences(site, originalDomainName, originalSiteName)
+  drool.system.displayHeader("Successfully loaded database for site '%s' from %s." % (site, dumpFilePath))
+
+
+def PACK() :
+  """
+  Packs the drupal site (database and modules, etc) up into a self-contained file that can, say, be unpacked on another server.
+  SYNTAX: pack <sitename>
+  EXAMPLE: pack www.mysite.com
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+
+  drool.system.displayHeader("Packing site '%s'." % site)
+  packFile = drool.core.pack(site)
+  drool.system.displayHeader("Successfully packed site '%s' into file '%s'." % (site, packFile))
+
+
+def UNPACK() :
+  """
+  Upacks a packed up drupal site, loading the database, and configuring the webserver for the new site, etc.
+  SYNTAX: unpack <packed site file> [www.newsitename.com]
+  EXAMPLE: unpack mypackedsite.tar.gz
+  """
+  try : packFile = commandArgs[0]
+  except : drool.system.abort("You must enter the pack file to unpack.")
+  
+  try : siteName = commandArgs[1]
+  except : siteName = None
+  
+  drool.system.displayHeader("Unpacking %s to %s." % (packFile, siteName))
+  drool.core.unpack(packFile, siteName)
+  drool.system.displayHeader("Successfully unpacked site %s from file '%s'." % (siteName or "", packFile))
+ 
+
+def INSTALL_HOOKS() : 
+  debugOutput("Installing drool hooks into drupal.")
+  if not drool.settings.options.force :
+    print "Are you sure you want to install drool hooks into the drupal source - this is experimental?"
+    input = raw_input("Type 'yes' to contiue: ")
+    if input.lower() != "yes" : return
+  drool.core.installHooks()
+
+
+def COPY_THEME() :
+  """
+  Copies a theme from one site to another.  This is useful if a theme has been customised in such a way that is useful to a new, similar site.
+  SYNTAX: copy_theme <destsite> <sourcesite> <theme-name>
+  EXAMPLE: copy_theme www.destsite.org www.sourcesite.org some_theme
+  """
+  try : destSite = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of an existing destination site.")
+  try : sourceSite = drool.drupal.getSite(commandArgs[1]) 
+  except : drool.system.abort("You must enter the name of an existing source site.")
+  try : themeName = commandArgs[2]
+  except : drool.system.abort("You must enter the name of the theme you wish to copy.")
+
+  if destSite.getDrupalVersion() != sourceSite.getDrupalVersion() :
+    drool.system.abort("The drupal versions of the sites do not match")
+
+  sourceThemeDir = os.path.join(sourceSite.getSitePath(),"themes",themeName)
+  destThemeDir = os.path.join(destSite.getSitePath(),"themes",themeName)
+
+  if not os.path.exists(sourceThemeDir) :
+    drool.system.abort("The source theme could not be found: %s" % sourceThemeDir)
+
+  if not drool.system.yesQuestion("Are you sure you want to replace the theme '%s' of '%s'?" % (themeName, destSite)) :
+    return
+  
+  if not os.path.exists(destThemeDir) :
+    return
+
+  drool.system.runCommand("cp -aL %s %s" % (sourceThemeDir, destThemeDir))
+
+def TEST() :
+  """
+  For nick to test things.
+  """
+  #site = drool.drupal.getSite("tomato")
+  #drool.drupal.updateFilePermissions(site)
+  debugOutput(drool.system.access("/etc/passwd", os.W_OK))
+  debugOutput(drool.system.access("/home/blundeln", os.W_OK))
+  debugOutput(drool.system.access("/tmp/testfile", os.W_OK | os.X_OK))
+  debugOutput(drool.system.access("/home", os.W_OK | os.X_OK))
+  debugOutput(drool.system.access("/home/franchtest", os.W_OK | os.X_OK))
+  debugOutput(drool.system.access("/home/server/websites/drupal/illuminate/template/matt", os.W_OK | os.X_OK))
+
+
+def PASSWORD() :
+  """
+  Resets the root password on the site
+  SYNTAX: password <site> <new_password>
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  
+  try : newPassword = commandArgs[1]
+  except : drool.system.abort("You must enter a password.")
+
+  username = drool.drupal.resetRootPassword(site, newPassword)
+  print("Changed password for root user '%s'." % username)
+
+
+def PHP() :
+  """
+  Runs an aribtrary php script within the Drupal environment of the specificed site.
+  SYNTAX: php <site> <php file>
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  try : phpScript = commandArgs[1]
+  except : drool.system.abort("You must enter a php script to run on the site.")
+ 
+  try :
+    arguments = commandArgs[2:]
+  except :
+    arguments = []
+
+  debugOutput("Running on site %s" % site)
+  code = open(phpScript).read()
+  drool.drupal.runPhpCode(site, code, *arguments)
+
+
+def DNS() :
+  """
+  Prints useful dns information about the specified site.
+  SYNTAX: dns <mysitename>
+  """
+  try : hostname = commandArgs[0]
+  except : drool.system.abort("You must enter the name of a site.")
+
+  dnsInfo = drool.dns.dnsLookup(hostname)
+  if not dnsInfo: 
+    print "This site has no DNS records pointing to this server\n"
+  else :
+    for record in dnsInfo :
+      print "This site has a properly configured %s record" % record
+
+def PATH() :
+  """
+  Prints out the path to the site
+  SYNTAX: path <mysitename>
+
+  EXAMPLE: cd `drool path somesite` - will change your current folder to the site's
+  """
+  site = drool.drupal.getSite(commandArgs[0]) 
+
+  print(site.getSitePath())
+  sys.exit()
+
+def UPDATE_PERMS() :
+  """
+  Updates the permissions of one or all drupal site folders, based on permissions of the site's drupal installation folder.
+  SYNTAX: update_perms <mysitename>
+  SYNTAX: update_perms all (to update permissions on every site)
+  """
+
+  
+  try : 
+    if commandArgs[0].lower() == "all" :
+      site = None
+    else :
+      site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site or type 'all'.")
+
+  if site :
+    drool.system.message("Updating special permissions for site %s" % site)
+    drool.core.updatePermissions(site)
+    drool.system.message("The permissions for site %s have been updated" % site)
+  else :
+    if not drool.system.yesQuestion("Are you sure you wish to update the special file permissions of all of your sites?") :
+      return
+    drool.system.message("Updating special permissions for all of your sites")
+    drool.core.updatePermissions()
+    drool.system.message("The permissions have been updated")
+
+
+
+def ALIAS() :
+  """
+  Adds an alias for the site to the webserver
+  SYNTAX: alias <site> <alias>
+
+  EXAMPLE: alias mysite.com www.mysite.com
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  
+  try : alias = commandArgs[1]
+  except : drool.system.abort("You must enter an alias.")
+
+  if drool.settings.manageApache :
+    drool.apache.addAlias(site, alias)
+    print("Added alias %s -> %s" % (alias, site))
+
+
+def FIX_TABLES() :
+  """
+  Runs a repair script on the databases of all Drupal sites, which is
+  very useful if mysql or the server crashed and you have seen some
+  database errors.
+
+  SYNTAX: fix_tables
+  """
+  
+  if not drool.system.yesQuestion("Are you sure you want to repair all tables? The database will be stopped for a short while."):
+    return
+
+  drool.database.fixTables(drool.settings.dbpath)
+
+  drool.system.displayHeader("Tables have been repaired.")
+
+
+def DETAILS() :
+  """
+  Displays useful details of the site
+
+  SYNTAX: details <site>
+  EXAMPLE: details mysite.com
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  
+  drool.core.displayDetails(site)
+
+
+def DB_SHELL() :
+  """
+  Enter the database shell of the site.
+
+  SYNTAX: db_shell <site>
+  EXAMPLE: db_shell mysite.com
+  """
+  try : site = drool.drupal.getSite(commandArgs[0]) 
+  except : drool.system.abort("You must enter the name of a site.")
+  
+  drool.database.shell(site)
+
+
+
+
+#
+# GLOBALS, ARGS and CONFIG
+#
+
+# List of drool commands.
+
+SITE_COMMANDS = [
+  "NEW",
+  "CLONE",
+  "DELETE",
+  "MOVE",
+  "ALIAS",
+  "LIST",
+  "PATH",
+  "REPORT",
+  "DETAILS",
+]
+
+DRUPAL_COMMANDS = [
+  "MODULE",
+  "THEME",
+  "SKIN",
+  "UNSKIN",
+  "EVENT",
+  "PHP",
+  "PASSWORD",
+]
+
+MAINTENANCE_COMMANDS = [
+  "DUMPDB",
+  "LOADDB",
+  "PACK",
+  "UNPACK",
+  "ENABLE",
+  "DISABLE",
+  "DNS",
+  "DB_SHELL",
+  "UPDATE_PERMS",
+  "FIX_TABLES",
+]
+
+EXPERIMENTAL_COMMANDS = [
+  "INSTALL_HOOKS",
+  "TEST",
+  "COPY_THEME",
+  "STATUS",
+]
+
+COMMAND_GROUPS = [
+  ["Site creation and manipulation", SITE_COMMANDS],
+  ["Drupal commands", DRUPAL_COMMANDS],
+  ["Maintenance commands", MAINTENANCE_COMMANDS],
+  ["Experimental commands", EXPERIMENTAL_COMMANDS],
+]
+
+# Build up command list and help string.
+commandsString = drool.system.box("Available commands",hChar="=")
+COMMANDS = []
+for title, commands in COMMAND_GROUPS :
+  COMMANDS += commands
+  commandsString += drool.system.box(", ".join(map(lambda x: x.lower(), commands)), title=title) + "\n"
+
+# These commands tatk no arguments.
+NO_ARGS = ["LIST", "INSTALL_HOOKS", "REPORT", "TEST"]
+
+usage = """%s COMMAND [options] [ARG0] [ARG1]
+\n%s
+%sFor details on using a command, use the help command (e.g. "drool help new, drool help module, etc.")
+""" % (drool.SCRIPT_NAME, drool.DESCRIPTION, commandsString)
+
+commandArgs = None
+
+
+def getConfigFile(username) :
+  
+  # If a config file has been set-up for this user, use that.
+  userConfig = os.path.join("/etc","drool-%s.conf" % username)
+  if os.path.exists(userConfig) :
+    return userConfig
+  elif drool.settings.options.configFile :
+    return drool.settings.options.configFile
+  else :
+    return os.path.join("/etc", drool.settings.scriptName.replace(".py","")+".conf")
+
+def loadConfig() :
+  
+  # Get the username
+  username = drool.system.getUsername()
+
+  configFile = getConfigFile(username)
+  config = ConfigParser.ConfigParser()
+  config.read(configFile)
+
+  drool.settings.dbroot = [config.get("database","dbroot"), config.get("database","dbrootpass")]
+  drool.settings.dbuser = [drool.util.configGet(config, "database","dbuser"), config.get("database","dbuserpass")]
+  drool.settings.dbpath = config.get("database","dbpath")
+
+  drool.settings.drupalDownloadLink = config.get("drupal","downloadLink")
+  drool.settings.drupalDownloadFTPHost = config.get("drupal","downloadFTPHost")
+  drool.settings.drupalDownloadFTPPath = config.get("drupal","downloadFTPPath")
+
+  drool.settings.webUser = config.get("system","webuser")
+  drool.settings.webGroup = config.get("system","webgroup")
+
+  drool.settings.drupalRoot = config.get("drupal","drupalRoot")
+  drool.settings.masterGroup = config.get("drupal","masterGroup")
+
+  drool.settings.adminEmails = config.get("system","admin emails")
+  
+  drool.settings.manageApache = config.get("system","webserver") == "apache2"
+
+
+def parseArgs() :
+
+  # Setup command line options.
+  argParser = optparse.OptionParser(version=drool.VERSION, usage=usage)
+  #argParser.add_option("-m", "--module-version", action="store", help="Module version", dest="moduleVersion", default=None)
+  argParser.add_option("--quiet", action="store_true", help="Suppress output messages.", dest="quiet", default=False)
+  argParser.add_option("-t", "--test-run", action="store_true", help="Run the command without making changes", dest="testRun", default=False)
+  argParser.add_option("--verbose", action="store_true", help="Print verbose information", dest="verbose", default=False)
+  argParser.add_option("--force", action="store_true", help="Force operation (e.g. do not prompt yes/no)", dest="force", default=False)
+  argParser.add_option("--showDiskUsage", action="store_true", help="Calculate site disk usage for the site list command", dest="showDiskUsage", default=None)
+  argParser.add_option("--config", action="store", help="Set the configuration file for drool to use", dest="configFile", default=None)
+  argParser.add_option("--cleanDB", action="store_true", help="Experimental: clean the db syntax when loading databases", dest="cleanDB", default=False)
+  argParser.add_option("--link", action="store_true", help="Link theme files for debugging", dest="linkFiles", default=False)
+
+  argParser.add_option("--skinSelector", action="store", help="Apply a css selector the skin css", dest="skinSelector", default=None)
+  argParser.add_option("--skinPseudoClass", action="store", help="Apply a css psudeo class to the skin css", dest="skinPseudoClass", default=None)
+  argParser.add_option("--xChop", action="store", help="Set manual vertical skin slice", dest="xChop", default=None)
+  argParser.add_option("--yChop", action="store", dest="yChop", help="Set manual horizontal skin slice", default=None)
+  argParser.add_option("--chopThreshold", action="store", type="float", help="Set the chopping threshold, the closer to zero the more exact pixel matches are.", dest="chopThreshold", default=0.0000001)
+  argParser.add_option("--test-skin", action="store_true", help="Apply a test skin image to the skin region - handy for testing skin regions", dest="useTestSkin", default=False)
+
+  # Parse the command-line args.
+  (options, args) = argParser.parse_args()
+
+  # Automatically invoke this script under sudo.
+  drool.system.autoSudo()
+  drool.system.checkRoot()
+
+  # Settings.
+  drool.settings.options = options
+  drool.settings.args = args
+
+  drool.settings.scriptName = os.path.basename(sys.argv[0])
+
+
+
+
+#
+# MAIN
+#
+
+
+def commandHelp(command) :
+  exec("helpText = %s.__doc__" % command.upper())
+  return "Usage of command '%s':\n%s" % (command, helpText) 
+
+def exit() :
+  drool.system.displayHeader(drool.DESCRIPTION)
+  sys.exit(0)
+
+def checkDependancies() :
+
+  if not drool.system.appExists("php") :
+    print "Warning: php-cli is not installed and is required to manipulate sites."
+
+  if not drool.system.appExists("uuencode") :
+    print "Warning: uuencode is not installed and is required to format email reports."
+
+
+def main() :
+ 
+  global commandArgs
+
+  checkDependancies()
+
+  # Parse args
+  parseArgs()
+  
+  # Load the config.
+  loadConfig()
+
+  if drool.settings.options.testRun :
+    drool.system.displayHeader("This is a SIMULATION - nothing will be changed.")
+  
+  args = drool.settings.args
+  try : command = args[0].upper()
+  except: drool.system.abort("You must enter a command.")
+  commandArgs = args[1:len(args)]
+ 
+  # Check if they explicitly asked for help
+  if command == "HELP" :
+    if len(commandArgs) == 0 :
+      print "You must specify a command for which you want help."
+      exit()
+
+    command = commandArgs[0].upper()
+    if command in COMMANDS :
+      drool.system.displayBox(commandHelp(command))
+    
+    exit()
+    
+
+  # Run the specified command.
+  if command in COMMANDS :
+
+    ## Print help.
+    #if len(commandArgs) == 0 and command not in NO_ARGS:
+    #  drool.system.displayBox(commandHelp(command))
+    #  exit()
+
+    # Set the create mask so group can read and write. 
+    originalMask = os.umask(2)
+    
+    if drool.settings.options.verbose :
+      exec("%s()" % command)
+    else :
+      try :
+        exec("%s()" % command)
+      except Exception, e :
+        if "NBDEBUG" in os.environ :
+          raise
+        drool.system.abort("%s" % e)
+    
+    os.umask(originalMask)
+  else :
+    print "Error: unknown command '%s'" % command
+
+  drool.system.displayHeader(drool.DESCRIPTION)
+
+if __name__ == "__main__" :
+
+  main()

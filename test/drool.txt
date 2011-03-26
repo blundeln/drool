@@ -1,0 +1,67 @@
+#
+# New site creation.
+#
+>>> testSites = ["www.testsite1.org.uk","www.testsite2.org.uk"]
+>>> drool.core.deleteSite(testSites[0])
+>>> drool.core.deleteSite(testSites[1])
+>>> drool.core.createNewSite(testSites[0])
+>>> testSite0 = drool.drupal.getSite(testSites[0])
+
+#
+# Site archiving functions
+#
+#>>> drool.apache.setSiteEnabled(testSite0, False)
+#>>> drool.apache.setSiteEnabled(testSite0, True)
+>>> dumpFile = "/tmp/%s.dump" % testSite0.getDatabaseName()
+>>> drool.database.dumpDatabase(testSite0, dumpFile)
+>>> drool.database.loadDatabase(testSite0, dumpFile)
+>>> drool.system.runCommand("rm %s" % dumpFile)
+0
+
+>>> packFile = drool.core.pack(testSite0)
+>>> drool.core.unpack(packFile, testSites[1])
+>>> drool.core.deleteSite(drool.drupal.getSite(testSites[1]).name)
+
+# Check status call
+>>> drool.core.getStatus(testSite0)
+{'siteExpirationDate'...}
+
+#
+# Check drupal hook installation
+#
+#>>> drool.core.installHooks(drupalVersion="5.0")
+#>>> drool.core.installHooks(drupalVersion="5.0", removeHooks=True)
+
+
+#
+# Install module and theme
+#
+>>> drool.core.installModule("ecommerce", testSite0)
+>>> drool.core.installModule("not-a-module", testSite0)
+Traceback (most recent call last):
+  ...
+Exception: Unable to find module ... check at www.drupal.org.
+>>> drool.core.installTheme("box_grey", testSite0)
+>>> drool.core.installTheme("not-a-theme", testSite0)
+Traceback (most recent call last):
+  ...
+Exception: Unable to find module ... check at www.drupal.org.
+
+#
+# Site cloning
+#
+>>> drool.core.cloneSite(testSite0, testSites[1])
+>>> drool.core.cloneSite(testSite0, testSites[1])
+Traceback (most recent call last):
+  ...
+Exception: Site ... exists already.
+
+#
+# Site listing
+#
+
+#
+# Clean up
+#
+>>> drool.core.deleteSite(testSites[0])
+>>> drool.core.deleteSite(testSites[1])

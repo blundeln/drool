@@ -1,0 +1,22 @@
+div.pagebox1 {background-image: url(../images/page-ts.png);}
+div.pagebox2 {background-image: url(../images/page-rs.png);}
+div.pagebox3 {background-image: url(../images/page-bs.png);}
+div.pagebox4 {background-image: url(../images/page-ls.png);}
+div.pagebox5 {background-image: url(../images/page-tl.png);}
+div.pagebox6 {background-image: url(../images/page-tr.png);}
+div.pagebox7 {background-image: url(../images/page-br.png);}
+div.pagebox8 {background-image: url(../images/page-bl.png);}
+div.blockbox1 {background-image: url(../images/block-ts.png);}
+div.blockbox2 {background-image: url(../images/block-rs.png);}
+div.blockbox3 {background-image: url(../images/block-bs.png);}
+div.blockbox4 {background-image: url(../images/block-ls.png);}
+div.blockbox5 {background-image: url(../images/block-tl.png);}
+div.blockbox6 {background-image: url(../images/block-tr.png);}
+div.blockbox7 {background-image: url(../images/block-br.png);}
+div.blockbox8 {background-image: url(../images/block-bl.png);}
+#primary li {background-image:url("../images/tab-n-r.png");}
+#primary a {background-image:url("../images/tab-n-l.png");}
+#primary li#current {background-image:url("../images/tab-a-r.png");}
+#primary #current a {background-image:url("../images/tab-a-l.png");}
+#primary a:hover {background-image:url("../images/tab-a-l.png");}
+#primary li:hover {background-image:url("../images/tab-a-r.png");}

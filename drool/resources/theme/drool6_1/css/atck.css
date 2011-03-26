@@ -1,0 +1,293 @@
+/***********
+
+What follows is css for the basic stucture/framework of the site. It is the css which supports any code which the atck buider outputs. The source of this code is from the YUI library and extensive modifications by Christos Constandinou (http://layout.constantology.com/) and Caleb Gilbert (http://highervisibilitywebsites.com) in order to make it more flexible and/or css valid.
+  
+NOTE:
+1. Any given theme may not need certain of the styles below. Deleting any which weren't needed for your particular template is an option, but certainly is not required.
+
+2. There are styles below which indicate that addition/overides have been placed for the style within fix-ie-6.css and fix-ie7.css. This was done in order to avoid adding css hacks to this file and so that atck properly passes w3c validation. (atck is css3 valid)
+
+3. Changing the sizes of your columns, or making them fixed sizes, is easy - just edit the appropriate class/id. Just be sure to also update the fix-ie css files to reflect your changes.
+
+*************/
+
+/* Reset elements margin and padding to zero for more cross-browser consistency */
+/* Copyright (c) 2006, Yahoo! Inc. All rights reserved. Code licensed under the BSD License: http://developer.yahoo.net/yui/license.txt version: 0.12.0 */
+	body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td{
+	margin: 0;
+	padding: 0;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+fieldset,img{
+	border: 0;
+}
+
+address,caption,cite,code,dfn,em,strong,th,var{
+	font-style: normal;
+	font-weight: normal;
+}
+
+ol,ul {
+	list-style: none;
+}
+
+caption,th {
+	text-align: left;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+
+q:before,q:after {
+	content: '';
+}
+
+abbr,acronym {
+	border: 0;
+}
+	
+/*
+	Based off the YUI font reset stylesheet (http://developer.yahoo.com/yui/fonts/).
+	However decided to go with using absolute sized fonts intead of the initial 13px they use. 
+	This makes it easier to	calculate em widths, 1em = 10px.
+	also only added line-height to block level elements which would be used purely for text and 
+	not alignment to fix some inheritence issues.
+*/
+body {
+  font: x-small arial, helvetica, clean, sans-serif;
+	 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+  }
+table {
+	font-size: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+	}
+select, input, textarea {
+	font: 99% arial, helvetica, clean, sans-serif;
+	}
+pre, code {
+	font: 115% monospace;
+	 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+  }
+h1,h2,h3,h4,h5,h6,
+dt,dd,li,pre,p,blockquote,
+address,caption,cite,code,dfn,var {
+	line-height: 1.22em;
+  }
+
+/*
+	Includes the YUI reset.css and IPC specific font reset css.
+*/
+.shim {
+	clear: both;
+	}
+br.shim {
+	line-height: 0;
+	}
+
+.hide {
+	display:none;
+	}
+
+.ah { 
+	height : 1px ; 
+	left : -5000px ; 
+	overflow : hidden ; 
+	position : absolute ; 
+	top : -5000px ; 
+	width : 1px ; 
+	}
+
+/*
+	 For controlling alignment, layout and width of page.
+*/
+/*~	page alignment	*/
+			body.center {
+				text-align: center;
+				}
+			body.center #container {
+				margin: 0 auto;
+				text-align: left;
+				}
+			
+/*~	generic page widths	*/
+	/*	fixed width will not scale horizontally	*/
+			body .fixed-sm {
+				width: 640px;
+				}
+			body .fixed-md {
+				width: 760px;
+				}
+			body .fixed-lg {
+				width: 842px;
+				}
+			body .fixed-xlg {
+				width: 942px;
+				}
+			
+	/*	em width will scale both horizontally & vertically	*/
+			body .zoom-sm { width : 64em ; }
+			body .zoom-md { width : 76em ; }
+			body .zoom-lg { width : 84.2em ; }
+			body .zoom-xlg { width : 94.2em ; }
+			
+	/*	will fill the whole page	*/
+			body .fluid {
+				margin: 0 5px;
+				width: 100%;
+				}
+			
+/*~	common stuffs	*/
+			.section, .standard, .classic, .layout {
+				clear: both;
+				width: 100%;
+				}
+			.section, .gr {
+				position: relative;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+			} 
+			
+			.layout .gr {
+				float : left;
+				}
+			
+			/*	makes good with the source order	*/
+			.a-b .b, 
+			.a-c .c, 
+			.b-c .c, 
+			.layout .gr .a-b .b, 
+			.layout .gr .a-c .c, 
+			.layout .gr .b-c .c {
+				float: right;
+				}
+			
+			/*	fix nesting for above	*/
+			.a-b .gr .b, 
+			.b-c .gr .c , 
+			.a-c .gr .c {
+				float: left;
+				}
+			
+/*~	column widths */
+	/*~	.classic	*/
+			.classic .a-b-c .gr, 
+			.classic .a-b .gr, 
+			.classic .b-c .gr,  
+			.standard .classic .a-b-c .gr, 
+			.standard .classic .a-b .gr, 
+			.standard .classic .b-c .gr {
+				width: 25%;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				} 
+			
+			.classic .a-b-c .b, 
+			.standard .classic .a-b-c .b {
+				width: 50%;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				}
+			
+			.classic .a-b .b,  
+			.classic .b-c .b, 
+			.standard .classic .a-b .b,  
+			.standard .classic .b-c .b {
+				width: 75%;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				}
+
+	/*~	.standard - doesn't require the standard class to work though it helps readability	*/
+			.a-b-c-d .gr, 
+			.standard .a-b-c-d .gr, 
+			.standard .layout .a-b-c-d .gr {
+				width: 25%;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				} 
+			
+			.a-b-c .gr, 
+			.standard .a-b-c .gr, 
+			.standard .layout .a-b-c .gr {
+				width: 33.3%;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				}
+			
+			.a-c .gr, 
+			.standard .a-c .gr, 
+			.classic .a-c .gr, 
+			.standard .gr .a-c .gr, 
+			.classic .gr .a-c .gr {
+				width: 50%;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				} 
+			
+			.a-b .b, 
+			.b-c .b, 
+			.standard .a-b .b, 
+			.standard .b-c .b , 
+			.standard .layout .a-b .b, 
+			.standard .layout .b-c .b  {
+				width: 67%;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				}
+			
+			.a-b .a, 
+			.b-c .a, 
+			.standard .a-b .a, 
+			.standard .b-c .c, 
+			.standard .layout .a-b .a, 
+			.standard .layout .b-c .c {
+				width: 33%;
+				}
+
+/*~	.tidy - handles equal column heights. It will recurse down into nested layouts so if you don't want 
+		equal column heights in child layouts then add a class of .untidy to them	\*/
+			.tidy .layout, 
+			.untidy .tidy .layout {
+				overflow: hidden;
+			 /* NOTE: There is an addition/override to this selector within fix-ie-6.css and fix-ie-7.css */
+				}
+			.tidy .gr, 
+			.untidy .tidy .gr {
+				margin-bottom: -1000em ! important;
+				padding-bottom: 1000em ! important;
+				}
+			/* For Opera */
+			@media all and (min-width: 0px) {
+				.tidy .gr, 
+				.untidy .tidy .gr {
+					margin-bottom: 0;padding: 0;
+					}
+				.tidy gr:after, 
+				.untidy .tidy gr:after { 
+					background : inherit ; 
+					content : ' ' ; 
+					display : block ; 
+					margin-bottom : -1000px ; 
+					padding-bottom : 1000px ; 
+				}
+			}
+		/*	end equal column height fix	*/
+		
+/*~	.untidy	over-write equal column heights for child layouts \*/
+			.untidy .layout {
+				overflow: visible;
+				}
+			.untidy .gr {
+				margin-bottom: 0 ! important;
+				padding-bottom: 0 ! important;
+				}
+			/* For Opera */
+			@media all and (min-width: 0px) {
+				.tidy gr:after { 
+					display : inline ; 
+					margin-bottom : 0 ; 
+					padding-bottom : 0 ; 
+				}
+			}
+			

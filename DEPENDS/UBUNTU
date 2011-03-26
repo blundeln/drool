@@ -1,0 +1,9 @@
+python (>= 2.4)
+sharutils
+python-imaging
+python-mysqldb
+php4 | php5
+php4-cli | php5-cli
+php5-mysql | php-mysql
+mysql-server
+apache2 | apache

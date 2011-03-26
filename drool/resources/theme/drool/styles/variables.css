@@ -1,0 +1,92 @@
+/* Nick Blundell 2007 - www.illuminateict.org.uk */
+
+/* DEBUG */
+x.skin { border:1px solid red; }
+
+body {
+  font: 80% Helvetica, Arial, sans-serif;
+  color: #494949;
+  background-color:white;
+}
+
+/* Set the page dimensions. */
+#page {margin: 5px 50px 0 50px; xwidth:800px; xmargin-left:auto; xmargin-right:auto;}
+
+
+/*
+ * Sidebars.  Note that since we are not using tables, you have to duplicate sidebar widths in a few places.
+ */
+
+/* Change all these for left sidebar width */
+#container { padding-left: 16.5em; }
+#leftbar { width: 16.5em; right: 16.5em; }
+#container > #leftbar { left: -16.5em; }
+
+/* Change all these for right sidebar width */
+#container { padding-right: 16.5em; }
+#rightbar { width: 16.5em;margin-right: -16.5em;}
+* html #leftbar { left: 16.5em; }
+
+/* 
+ * Skin adjustments
+ */
+
+/* Page */
+div.pageskin-inner {}
+
+/* Header */
+div.headerskin-inner {padding-top:10px; padding-bottom:15px; padding-right:10px;xheight:200px;}
+
+/* Content */
+div.contentskin {margin:2px 2px 2px 2px;}
+div.contentskin-inner {padding:0px 5px 0px 5px;}
+ 
+/* Blocks */
+div.blockskin {margin:0 4px 10px 4px; }
+div.block h2 {padding: 6px 4px 6px 4px;}
+div.blocktitleskin-inner {xpadding: 6px 4px 6px 4px;}
+div.block .content {padding:4px 12px 10px 6px;}
+
+/* Footer */
+div.footerskin-inner {padding:20px;}
+
+div.accessibilityskin-inner {padding: 5px;}
+
+/*
+ * Header items: position, style, hide or show - try to avoid absolute positioning to aid accessibility.
+ */
+#logo {margin:0px 0 0 25px; float:left; xdisplay:none;}
+#name-slogan-wrap {float:left; margin-left:20px; margin-top:20px;}
+#site-name {float:left; xdisplay:none;}
+#site-name a, #site-name a:active, #site-name a:link, #site-name a:hover, #site-name a:visited {font-weight:bold;color:white;}
+#site-slogan {float:left;clear:left;margin-left:10px; font-size:80%;color:yellow;xdisplay:none;}
+#search-box {float:right; xclear:right; margin-top:25px; margin-right:10px;xdisplay:none;}
+#access-buttons {float:right; clear:right; margin-top:20px; margin-right:10px; width:125px;xdisplay:none;}
+
+/*
+ * Primary and secondary links.
+ */
+#primary-links {clear:both;}
+ul.primary-links {float:right;}
+ul.primary-links a {font-size:120%; padding: 4px 6px 4px 6px;}
+ul.primary-links a {color:black;}
+#secondary-links {clear:both;}
+ul.secondary-links {float:right;}
+ul.secondary-links a {font-size:120%; padding: 4px 6px 4px 6px;}
+ul.secondary-links a {color:black;}
+ul.links li {padding-right:0px;}
+
+/*
+ * Common styling.
+ */
+h1, h2, h3, h4, h5, h6 { xcolor:blue; }
+h1 { font-size: 170%; }
+h2 { font-size: 160%; }
+h3 { font-size: 140%; }
+h4 { font-size: 130%; }
+h5 { font-size: 120%; }
+h6 { font-size: 110%; }
+
+div.block h2 {color:white;}
+#footer {text-align:center;}
+div.breadcrumb {xdisplay:none;}

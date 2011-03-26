@@ -1,0 +1,7 @@
+/* IE specific stlyes - N Blundell 2006 */
+
+/* Stupid IE... */
+#primary a:hover {
+  color:blue;
+  background-image:url("../images/tab-n-l.png");
+}

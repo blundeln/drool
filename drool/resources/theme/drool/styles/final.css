@@ -1,0 +1,20 @@
+#switchbuttons { z-index:1000;}
+#switchbuttons ul {
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+#switchbuttons ul li {display:inline;float:left; padding:0; margin:0 2px 0 2px; background:none;}
+div#switchbuttons ul li a.a-graphical {background:url("../images/switch-graphical-n.png") no-repeat left top !important;}
+div#switchbuttons ul li a.a-textsize {background:url("../images/switch-textsize-n.png") no-repeat left top !important;}
+div#switchbuttons ul li a.a-colourscheme {background:url("../images/switch-colourscheme-n.png") no-repeat left top !important;}
+div#switchbuttons ul li a.a-reset {background:url("../images/switch-reset-n.png") no-repeat left top !important;}
+div#switchbuttons ul li a.a-graphical:hover {background:url("../images/switch-graphical-a.png") no-repeat left top !important;}
+div#switchbuttons ul li a.a-textsize:hover {background:url("../images/switch-textsize-a.png") no-repeat left top !important;}
+div#switchbuttons ul li a.a-colourscheme:hover {background:url("../images/switch-colourscheme-a.png") no-repeat left top !important;}
+div#switchbuttons ul li a.a-reset:hover {background:url("../images/switch-reset-a.png") no-repeat left top !important;}
+div#switchbuttons ul li a {
+  font-size:24px;
+  padding:0 26px 0 0;
+  text-decoration:none;
+}

@@ -1,0 +1,12 @@
+body {
+  background:#96ffff !important;
+  color:black !important;
+}
+
+*, a, a:visited {
+  color:black !important;
+}
+
+.skin {
+  border: 4px solid black;
+}

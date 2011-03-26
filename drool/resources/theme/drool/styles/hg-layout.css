@@ -1,0 +1,67 @@
+/*** The Essential Code ***/
+
+
+body {
+  min-width: 550px;      /* 2x LC width + RC width */
+}
+
+#header {
+}
+
+#container {
+  padding-left: 200px;   /* LC width */
+  padding-right: 150px;  /* RC width */
+}
+#container .column {
+  position: relative;
+  float: left;
+}
+#maincontent {
+  width: 100%;
+}
+#leftbar {
+  width: 200px;          /* LC width */
+  right: 200px;          /* LC width */
+  margin-left: -100%;
+}
+
+#rightbar {
+  width: 150px;          /* RC width */
+  margin-right: -150px;  /* RC width */
+}
+#footer {
+  clear: both;
+}
+
+/*** IE6 Fix ***/
+* html #leftbar {
+  left: 150px;           /* RC width */
+}
+
+#container > #leftbar {
+left: -200px;             /* -(LC fullwidth) */
+margin-left: expression(
+document.all.maincontent.offsetWidth * -1 +
+parseFloat(document.all.maincontent.currentStyle.paddingLeft) +
+parseFloat(document.all.leftbar.currentStyle.paddingLeft) +
+parseFloat(document.all.leftbar.currentStyle.paddingRight)
+); /* Fix for IE7 */
+}
+
+/* Switch off right sidebar */
+body.sidebar-left #container, body.sidebar-none #container {padding-right:0px;}
+body.sidebar-left #container #rightbar, body.sidebar-none #container #rightbar {display:None;}
+/*** IE6 Fix ***/
+* html body.sidebar-left #leftbar, * html body.sidebar-none #leftbar {
+  left: 0;           /* RC width */
+}
+
+/* Switch off left sidebar */
+body.sidebar-right #container, body.sidebar-none #container {padding-left:0px;}
+body.sidebar-right #container #leftbar, body.sidebar-none #container #leftbar {display:None;}
+body.sidebar-right #container > #leftbar, body.sidebar-none #container > #leftbar {
+left: 0;             /* -(LC fullwidth) */
+display: none;
+/* Fix for IE7 */
+}
+

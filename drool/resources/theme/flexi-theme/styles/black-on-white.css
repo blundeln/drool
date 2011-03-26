@@ -1,0 +1,8 @@
+*, a, a:visited {
+  color:black !important;
+  background:white !important;
+}
+
+.block, #main {
+  border: 4px solid black;
+}

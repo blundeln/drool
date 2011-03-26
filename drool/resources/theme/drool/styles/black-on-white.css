@@ -1,0 +1,12 @@
+body {
+  background:white !important;
+  color:black !important;
+}
+
+*, a, a:visited {
+  color:black !important;
+}
+
+#header, .block, #main, .primary-links {
+  border: 4px solid black;
+}

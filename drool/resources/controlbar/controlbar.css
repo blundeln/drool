@@ -1,0 +1,32 @@
+#controlbar {
+  border:1px solid black;
+  background-color:#cccccc;
+  text-align:left;
+  padding:2px;
+}
+
+#controlbar div {
+  float:left;
+}
+
+#controlbar ul {
+  list-style:none;
+  margin:0; padding:0;
+}
+#controlbar ul li {
+  margin: 0;
+  padding: 0;
+  background-image: none;
+}
+
+#controlbar ul.cbicons li {
+  float:left;
+}
+
+#controlbar .right {
+  float:right;
+}
+
+.access-hidden {
+  position:absolute;left:-5000px;
+}

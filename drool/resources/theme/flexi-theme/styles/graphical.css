@@ -1,0 +1,476 @@
+/* Adapted by Nick Blundell 2006 */
+
+
+/*********** Body style *************/
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #000;
+  background-color: #fff;
+  font: 76% Verdana, Arial, Helvetica, sans-serif;
+  xtext-align:center;
+}
+
+
+/*********** Layout hacks *************/
+
+.clear:after {
+content: "."; 
+display: block; 
+height: 0; 
+clear: both; 
+visibility: hidden;
+}
+
+.clear {display: inline-block;}
+
+/* Hides from IE-mac \*/
+* html .clear {height: 1%;}
+.clear {display: block;}
+/* End hide from IE-mac */
+
+
+.spacer {
+  clear:both;
+  font-size: 4px;
+}
+
+.v-spacer {
+  float:left;
+  xheight:0;
+  margin:0;
+  padding:0 0 0 0;
+  font-size:1em;
+  visibility:hidden;
+  /*  Don't know why, but ie needs this. */
+  border:1px solid black;
+}
+
+/*********** Page layout *************/
+
+div.pagebox1 {
+  position:relative;
+  /* Auto for centering static width site. */
+  margin-left:auto;
+  margin-right:auto;
+  text-align:left;
+}
+
+#container {
+}
+
+#header, #content {
+  width: 100%;
+}
+
+#header {
+  position:relative; /* So we can postion things absolutly */
+  top:0;
+  left:0;
+}
+#main {
+}
+#sidebar-left, #sidebar-right {
+  /* padding in px not ex because IE messes up 100% width tables otherwise */
+  vertical-align: top;
+  /* This seems to fix a bug. */
+  width:98px;
+}
+#footer {
+  xbackground-color: #eee;
+  xpadding: 1em 1em 0 1em;
+  font-size: 0.8em;
+}
+#footer p {margin:0;padding:0;}
+
+/*********** General styling. *************/
+
+h1, h2, h3, h4, h5, h6 { margin-bottom: 0.5em; }
+h1 { font-size: 1.3em; }
+h2 { font-size: 1.2em; }
+h3, h4, h5, h6 { font-size: 1.1em; }
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.9em;
+}
+
+a { text-decoration: none; font-weight: bold; }
+a:link { color: #39c; }
+a:visited { color: #369; }
+a:hover { color: #39c; text-decoration: underline; }
+
+fieldset { border: 1px solid #ccc; }
+pre {
+  background-color: #eee;
+  padding: 0.75em 1.5em;
+  font-size: 12px;
+  border: 1px solid #ddd;
+}
+table {
+  /* make <td> sizes relative to body size! */
+  font-size: 1em;
+}
+
+#footer p {
+  text-align:center;
+}
+
+
+/*********** Header styling. *************/
+#header-1 {
+  background:none repeat-x left top;
+}
+#header-2 {
+  background:none no-repeat left top;
+}
+#header-3 {
+  background:none no-repeat right top;
+}
+
+
+/*********** Header elements. *************/
+#header .v-spacer {
+}
+#logo {
+  position:absolute;
+  margin:0;
+}
+#menu {
+  padding: 0.5em 0.5em 0 0.5em;
+  text-align: right;
+  vertical-align: middle;
+}
+
+#mission {
+  background-color: #369;
+  padding: 1.5em 2em;
+  color: #fff;
+}
+#mission a, #mission a:visited {
+  color: #9cf;
+  font-weight: bold;
+}
+#search {
+  position:absolute;
+  right:10px;
+  top:50px;
+}
+#search .form-text, #search .form-submit {
+  border: 1px solid #369;
+  font-size: 1.1em;
+  height: 1.5em;
+  vertical-align: middle;
+}
+#search .form-text {
+  width: 8em;
+  padding: 0 0.5em 0 0.5em;
+}
+.site-name {
+  position:absolute;
+  padding: 0;
+  margin:0;
+  font-size: 2em;
+  width: 60%;
+}
+.site-name a:link, .site-name a:visited {
+  xcolor: #fff;
+}
+.site-name a:hover {
+  xcolor: #369;
+  text-decoration: none;
+}
+.site-slogan {
+  position:absolute;
+  font-size: 1em;
+  color: #000;
+  display: block;
+  margin: 0em 0em 0em 0em;
+  font-style: italic;
+  font-weight: bold;
+}
+#help {
+  font-size: 0.9em;
+  margin-bottom: 1em;
+}
+.breadcrumb {
+  margin-bottom: .5em;
+  font-size:0.8em;
+}
+.messages {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: 0.3em;
+  margin-bottom: 1em;
+}
+.error {
+  border-color: red;
+}
+
+
+/*********** Primary and secondary links. *************/
+
+#primlinks {
+  position:absolute;
+  right:5px;
+  top:76px;
+  width:100%;
+  background:transparent;
+  line-height:normal;
+}
+
+ul#primary {
+  margin:0;
+  margin-right: 8px;
+  padding:0;
+  list-style:none;
+}
+
+#primary li {
+  float:right;
+  background:none no-repeat right top;
+  margin:0;
+  padding:0;
+}
+
+#primary a {
+  display: block;
+  background:none no-repeat left top;
+  padding:5px 8px 5px 8px;
+  font-size:14px;
+  color:black;
+}
+
+#primary li#current {
+  background:none no-repeat right top;
+}
+
+#primary #current a {
+  background:none no-repeat left top;
+}
+
+#primary a:hover {
+  background:none no-repeat left top;
+  text-decoration:none;
+}
+
+#primary li:hover {
+  background:none no-repeat right top;
+}
+
+
+
+/*********** General drupal elements. *************/
+
+.title, .title a {
+  font-weight: bold;
+  font-size: 1.3em;
+  color: #777;
+  margin: 0 auto 0 auto;  /* decrease default margins for h<x>.title */
+}
+.submitted {
+  color: #999;
+  font-size: 0.8em;
+}
+.links {
+  color: #999;
+}
+.links a {
+  font-weight: bold;
+}
+.block {
+}
+.block .title {
+  text-align: center;
+  color:white;
+}
+.title {
+  margin-bottom: .25em;
+}
+.box .title {
+  font-size: 1.1em;
+}
+/* This makes menu admin clearer. */
+div.box {margin-bottom:30px}
+.node {
+  margin: .5em 0 2em 0;
+}
+.sticky {
+  padding: .5em;
+  background-color: #eee;
+  border: solid 1px #ddd;
+}
+.node .content, .comment .content {
+  margin: .5em 0 .5em 0;
+}
+.node .taxonomy {
+  color: #999;
+  font-size: 0.8em;
+  xpadding: 1.5em;
+}
+.node .picture {
+  border: 1px solid #ddd;
+  float: right;
+  margin: 0.5em;
+}
+.comment {
+  border: 1px solid #abc;
+  padding: .5em;
+  margin-bottom: 1em;
+}
+.comment .title a {
+  font-size: 1.1em;
+  font-weight: normal;
+}
+.comment .new {
+  text-align: right;
+  font-weight: bold;
+  font-size: 0.8em;
+  float: right;
+  color: red;
+}
+.comment .picture {
+  border: 1px solid #abc;
+  float: right;
+  margin: 0.5em;
+}
+
+/* This allows us to float divs relative to content. */
+xdiv.content {position:relative;}
+
+
+div.pagebox1 { background: transparent none repeat-x top; }
+div.pagebox2 { background: transparent none repeat-y right; }
+div.pagebox3 { background: transparent none repeat-x bottom; }
+div.pagebox4 { background: transparent none repeat-y left; }
+div.pagebox5 { background: transparent none no-repeat top left; }
+div.pagebox6 { background: transparent none no-repeat top right; }
+div.pagebox7 { background: transparent none no-repeat bottom right; }
+div.pagebox8 { background: transparent none no-repeat bottom left; }
+
+div.headerbox1 { background: transparent none repeat-x top; }
+div.headerbox2 { background: transparent none repeat-y right; }
+div.headerbox3 { background: transparent none repeat-x bottom; }
+div.headerbox4 { background: transparent none repeat-y left; }
+div.headerbox5 { background: transparent none no-repeat top left; }
+div.headerbox6 { background: transparent none no-repeat top right; }
+div.headerbox7 { background: transparent none no-repeat bottom right; }
+div.headerbox8 { background: transparent none no-repeat bottom left; }
+
+div.blockbox1 {
+  background: transparent none repeat-x top;
+  margin-bottom:10px;
+}
+div.blockbox2 { background: transparent none repeat-y right; }
+div.blockbox3 { background: transparent none repeat-x bottom; }
+div.blockbox4 { background: transparent none repeat-y left; }
+div.blockbox5 { background: transparent none no-repeat top left; }
+div.blockbox6 { background: transparent none no-repeat top right; }
+div.blockbox7 { background: transparent none no-repeat bottom right; }
+div.blockbox8 { background: transparent none no-repeat bottom left; }
+
+div.contentbox1 { background: transparent none repeat-x top; }
+div.contentbox2 { background: transparent none repeat-y right; }
+div.contentbox3 { background: transparent none repeat-x bottom; }
+div.contentbox4 { background: transparent none repeat-y left; }
+div.contentbox5 { background: transparent none no-repeat top left; }
+div.contentbox6 { background: transparent none no-repeat top right; }
+div.contentbox7 { background: transparent none no-repeat bottom right; }
+div.contentbox8 { background: transparent none no-repeat bottom left; }
+
+
+
+/*********** Module specific stuff. *************/
+
+#aggregator .feed-source {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: 1em;
+  margin: 1em 0 1em 0;
+}
+#aggregator .news-item .categories, #aggregator .source, #aggregator .age {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9em;
+}
+#aggregator .title {
+  margin-bottom: 0.5em;
+  font-size: 1em;
+}
+#aggregator h3 {
+  margin-top: 1em;
+}
+#forum table {
+  width: 100%;
+}
+#forum td {
+  padding: 0.5em 0.5em 0.5em 0.5em;
+}
+#forum td.forum, #forum td.posts {
+  background-color: #eee;
+}
+#forum td.topics, #forum td.last-reply {
+  background-color: #ddd;
+}
+#forum td.container {
+  background-color: #ccc;
+}
+#forum td.container a {
+  color: #555;
+}
+#forum td.statistics, #forum td.settings, #forum td.pager {
+  height: 1.5em;
+  border: 1px solid #bbb;
+}
+#forum td .name {
+  color: #96c;
+}
+#forum td .links {
+  padding-top: 0.7em;
+  font-size: 0.9em;
+}
+#profile .profile {
+  clear: both;
+  border: 1px solid #abc;
+  padding: .5em;
+  margin: 1em 0em 1em 0em;
+}
+#profile .profile .name {
+  padding-bottom: 0.5em;
+}
+.block-forum h3 {
+  margin-bottom: .5em;
+}
+.calendar a {
+  text-decoration: none;
+}
+.calendar td, .calendar th {
+  padding: 0.4em 0;
+  border-color: #888;
+}
+.calendar .day-today {
+  background-color: #69c;
+}
+.calendar .day-today a {
+  color: #fff;
+}
+.calendar .day-selected {
+  background-color: #369;
+  color: #fff;
+}
+.calendar .header-week {
+  background-color: #ccc;
+}
+.calendar .day-blank {
+  background-color: #ccc;
+}
+.calendar .row-week td a:hover {
+  background-color: #fff; color: #000;
+}
+
+img.preview, img.thumbnail, img.img_assist_custom {
+  border: 0px;
+}
+
+
+

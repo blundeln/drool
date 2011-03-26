@@ -1,0 +1,12 @@
+body {
+  background:blue !important;
+  color:yellow !important;
+}
+
+*, a, a:visited {
+  color:yellow !important;
+}
+
+#header, .block, #main, .primary-links {
+  border: 4px solid yellow;
+}

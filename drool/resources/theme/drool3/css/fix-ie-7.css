@@ -1,0 +1,69 @@
+/* Items from style.css necessary because IE doesn't not get these things right */
+body {
+  font: xx-small;
+  }
+
+pre, code {
+  font-size: 100%;
+  }
+  
+.section, .gr {
+  position: static;
+  }
+
+.a-b-c-d .gr, 
+.standard .a-b-c-d .gr, 
+.standard .layout .a-b-c-d .gr {
+  width: 24.9%;
+  }
+  
+.a-c .gr, 
+.standard .a-c .gr, 
+.classic .a-c .gr, 
+.standard .gr .a-c .gr, 
+.classic .gr .a-c .gr {
+  width: 49.9%;
+  }
+
+.a-b .b, 
+.b-c .b, 
+.standard .a-b .b, 
+.standard .b-c .b , 
+.standard .layout .a-b .b, 
+.standard .layout .b-c .b  {
+	width: 65%;
+  }
+
+	/*~	.classic	*/
+.classic .a-b-c .gr, 
+.classic .a-b .gr, 
+.classic .b-c .gr,  
+.standard .classic .a-b-c .gr, 
+.standard .classic .a-b .gr, 
+.standard .classic .b-c .gr {
+width: 24.9%;
+	} 
+			
+.classic .a-b-c .b, 
+.standard .classic .a-b-c .b {
+width: 49.9%;
+	}
+			
+.classic .a-b .b,  
+.classic .b-c .b, 
+.standard .classic .a-b .b,  
+.standard .classic .b-c .b {
+width: 74.9%;
+	}
+
+.a-b-c .gr, 
+.standard .a-b-c .gr, 
+.standard .layout .a-b-c .gr {
+width: 33%;
+  }
+
+.tidy .layout, 
+.untidy .tidy .layout {
+  height : 100%;
+  }
+/* End of items from style.css */

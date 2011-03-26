@@ -1,0 +1,4 @@
+name = Drool Theme
+description = A skinnable, accessible theme for use with the drool command.
+core = 6.x
+engine = phptemplate

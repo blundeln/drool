@@ -1,0 +1,229 @@
+/**
+ * Layout
+ */
+
+#wrapper {
+}
+
+#wrapper #container {
+  margin: 0 auto;
+  padding: 0 20px;
+  max-width: 1270px;
+}
+
+#wrapper #container #header {
+  height: 80px;
+}
+
+#wrapper #container #header #logo-floater {
+  position: absolute;
+}
+
+#wrapper #container #header h1, #wrapper #container #header h1 a:link, #wrapper #container #header h1 a:visited {
+  line-height: 120px;
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+#wrapper #container #header h1 span {
+  font-weight: bold;
+}
+
+#wrapper #container #header h1 img {
+  padding-top: 16px;
+  padding-right: 20px;
+  float: left;
+}
+
+/* With 3 columns, require a minimum width of 1000px to ensure there is enough horizontal space. */
+body.sidebars {
+  min-width: 980px;
+}
+/* With 2 columsn, require a minimum width of 800px. */
+body.sidebar-left, body.sidebar-right {
+  min-width: 780px;
+}
+
+/* We must define 100% width to avoid the body being too narrow for near-empty pages */
+#wrapper #container #center {
+  float: left;
+  width: 100%;
+}
+
+#header-region {
+clear:both;
+}
+
+#header-region .block {
+  display: block;
+  margin: 0 1em;
+}
+
+#header-region .block-region {
+  display: block;
+  margin: 0 0.5em 1em;
+  padding: 0.5em;
+  position: relative;
+  top: 0.5em;
+}
+
+#header-region * {
+  display: inline;
+  line-height: 1.5em;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#header-region p, #header-region img {
+  margin-top: 0.5em;
+}
+
+#header-region h2 {
+  margin: 0 1em 0 0;
+}
+
+#header-region h3, #header-region label, #header-region li {
+  margin: 0 1em;
+  padding: 0;
+  background: none;
+}
+
+
+/* So we move the #center container over the sidebars to compensate */
+body.sidebar-left #center {
+  margin-left: -210px;
+}
+body.sidebar-right #center {
+  margin-right: -210px;
+}
+body.sidebars #center {
+  margin: 0 -210px;
+}
+
+/* And add blanks left and right for the sidebars to fill */
+body.sidebar-left #squeeze {
+  margin-left: 210px;
+}
+body.sidebar-right #squeeze {
+  margin-right: 210px;
+}
+body.sidebars #squeeze {
+  margin: 0 210px;
+}
+
+/* We ensure the sidebars are still clickable using z-index */
+#wrapper #container .sidebar {
+  margin: 60px 0 5em;
+  width: 210px;
+  float: left;
+  z-index: 2;
+  position: relative;
+}
+
+#wrapper #container .sidebar .block {
+  margin: 0 0 1.5em 0;
+}
+
+#sidebar-left .block {
+  padding: 0 15px 0 0px;
+}
+
+#sidebar-right .block {
+  padding: 0 0px 0 15px;
+}
+
+.block .content {
+  margin: 0.5em 0;
+}
+
+#sidebar-left .block-region {
+  margin: 0 15px 0 0px;
+}
+
+#sidebar-right .block-region {
+  margin: 0 0px 0 15px;
+}
+
+.block-region {
+  padding: 1em;
+  background: transparent;
+  border: 2px dashed #b4d7f0;
+  text-align: center;
+  font-size: 1.3em;
+}
+
+/* Now we add the backgrounds for the main content shading */
+#wrapper #container #center #squeeze {
+  position: relative;
+}
+
+#wrapper #container #center .right-corner {
+  position: relative;
+  left: 10px;
+}
+
+#wrapper #container #center .right-corner .left-corner {
+  padding: 60px 25px 5em 35px;
+  margin-left: -10px;
+  position: relative;
+  left: -10px;
+  min-height: 400px;
+}
+
+#wrapper #container #footer {
+  float: none;
+  clear: both;
+  text-align: center;
+  margin: 4em 0 -3em;
+  color: #898989;
+}
+
+#wrapper #container .breadcrumb {
+  position: absolute;
+  top: 15px;
+  left: 35px;
+  z-index: 3;
+}
+
+body.sidebar-left  #footer {
+  margin-left: -210px;
+}
+
+body.sidebar-right #footer {
+  margin-right: -210px;
+}
+
+body.sidebars #footer {
+  margin: 0 -210px;
+}
+
+/**
+ * Header
+ */
+#wrapper #container #header h1, #wrapper #container #header h1 a:link, #wrapper #container #header h1 a:visited {
+  color: #fff;
+  font-weight: normal;
+  text-shadow: #1659ac 0px 1px 3px;
+  font-size: 1.5em;
+}
+
+#wrapper #container #header h1 a:hover {
+  text-decoration: none;
+}
+
+#wrapper #container .breadcrumb {
+  font-size: 0.92em;
+}
+
+#wrapper #container .breadcrumb, #wrapper #container .breadcrumb a {
+  color: #529ad6;
+}
+
+#mission {
+  padding: 1em;
+  border: 1px solid #e0e5fb;
+  margin-bottom: 2em;
+}
+
+

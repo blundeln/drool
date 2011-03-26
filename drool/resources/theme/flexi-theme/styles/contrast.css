@@ -1,0 +1,5 @@
+#primlinks, #primary, .taxonomy  { background:transparent !important; }
+a { text-decoration:underline; }
+#logo {display:block;}
+.site-name {display:block;}
+.site-slogan {display:block;}

@@ -1,0 +1,91 @@
+/* CSS variables for flexi-theme - N Blundell 2006 */
+
+/* Note, I put 'x' in front of styles to disable them. */
+
+/* Debug */
+xdiv {border: 1px solid green;}
+
+/* Set the global font, text colour, and background colour. */
+body {
+  color: #000; background-color: #fff;
+  font: 76% Verdana, Arial, Helvetica, sans-serif;
+  xtext-align:center; /* Use this to centre fixed-width page. */
+}
+
+/*  Use these to set a fixed width page and also for the page margin. */
+div.pagebox1 { xwidth: 800px; margin:10px 60px 10px 60px;}
+
+/* Alter this to position content of the page skin */
+#container { margin: 0 0 15px 0; }
+
+/* Alter this to push the footer down. */
+#footer {margin-top:20px;}
+
+/* Alter this to position content of the main-content skin */
+#main { padding: 0px 20px 0px 20px; }
+div.contentbox1 {xbackground-color:#fff;margin:0;}
+
+
+/* Use these to set the width of the sidebars. */
+#sidebar-left div.blockbox1 { width:200px; }
+#sidebar-right div.blockbox1 { width:200px; }
+
+/*********** Header item positioning. *************/
+
+/* Use this to set the height of the header. */
+#header .v-spacer { margin-bottom:10em;}
+
+/* Use these to set positions of logo, site name, search thing, primary links, and style switch buttons. */
+#logo { top:20px;left:30px; xdisplay:none;}
+.site-name { top:50px;left:130px; xdisplay:none;}
+#search { right:15px; top:4em; xtop:50px; xdisplay:none;}
+#primlinks { right:15px; top:6em; xtop:75px; xdisplay:none;}
+.breadcrumb {xmargin-top:12px; xdisplay:none;}
+.site-slogan{top:6em; left:150px; width:450px; color:yellow; font-size:1.1em; xdisplay:none;}
+#switchbuttons { position:absolute; right:10px; top:9em; }
+
+/* Set the site name text style.*/
+.site-name a, .site-name a:visited { color: white; }
+
+/* Set the inter--primary-link spacing. */
+#primary li { margin-right: 1px; }
+
+/* Set the size of primary link tabs to fit skin. */
+#primary a { padding:5px 8px 5px 8px; font-size:14px; }
+
+
+/*********** Block contents positioning. *************/
+
+/* Enable these guidlines to help with block skin positioning. */
+x.block, x.block .title {border:1px solid black;}
+
+/* Set block background colour to match block skin and also inter-block spacing. */
+div.blockbox1 { xbackground-color:#ffffff; margin:0 0 10px 0; }
+
+/* Change this to reposition block headers to suit block skin. */
+.block .title { padding: 6px 0 6px 0; color:white; }
+
+/* Change this to reposition block contents to suit your block's skin. */
+.block { padding: 0px 10px 10px 10px; }
+
+/* Add '.block-*-wrap' in front of stylings for specific block types. */
+.xblock-menu-wrap .block {padding: 0 0 0 0;}
+
+/*********** General styling. *************/
+
+h1, h2, h3, h4, h5, h6 { margin-bottom: 0.5em; }
+h1 { font-size: 1.3em; }
+h2 { font-size: 1.2em; }
+h3, h4, h5, h6 { font-size: 1.1em; }
+
+a:link { color: #39c; }
+a:visited { color: #369; }
+a:hover { color: #39c; text-decoration: underline; }
+
+/**************** Hiding things *****************/
+
+/* Use this to hide the menu block's title. */
+x.block-menu .title { display:none;}
+/* Use these to hide attributes (e.g. title and timestamps) of static pages. */
+xdiv.page .title { display:none;}
+xdiv.page .submitted { display:none;}
